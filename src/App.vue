@@ -4,6 +4,8 @@
       title="Travel Destinations"
       subtitle="Embark on a Global Adventure"
     />
+    <h6 v-if="loading">Loading... Please wait for a moment.</h6>
+    <h6 v-if="errorMessage">{{ errorMessage }}</h6>
     <TravelDestinationBox :destinations="destinations" />
   </div>
 </template>
@@ -22,13 +24,22 @@ export default {
   data() {
     return {
       destinations: [],
+      loading: false,
+      errorMessage: "",
     };
   },
   methods: {
     async fetchTravelDestinations() {
-      const res = await fetch("https://sudipthapa.onrender.com/api");
-      const data = await res.json();
-      return data;
+      try {
+        this.loading = true;
+        const res = await fetch("https://sudipthapa.onrender.com/api");
+        const data = await res.json();
+        this.loading = false;
+        return data;
+      } catch (error) {
+        this.loading = false;
+        this.errorMessage = "Something went wrong. Please reload the page.";
+      }
     },
   },
   async created() {
@@ -54,6 +65,12 @@ body {
   padding: 0px 40px;
   max-width: 1800px;
   margin: auto;
+}
+
+#main-container h6 {
+  font-size: 16px;
+  text-align: center;
+  margin-top: 50px;
 }
 
 @media screen and (max-width: 768px) {
